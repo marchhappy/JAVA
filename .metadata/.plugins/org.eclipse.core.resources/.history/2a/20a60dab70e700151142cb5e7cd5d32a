@@ -1,0 +1,90 @@
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+
+import jxl.*;
+
+
+public class File_invert {
+	private File file_path;   //要转换的文件路径
+	private String savefile_path;
+	private int i;   //开始列
+	private int j;   //结束列
+	private String fill_char;
+	private String fill_char2;
+	private String save_file_name;
+	
+	//1.获取文件路径,指定读取的列,目标文件保存名称
+	public File_invert(file_info obj)
+	{
+		this.file_path=obj.getFile_path();
+		this.i=obj.getI()-1 ;
+		this.j=obj.getJ()-1;
+		this.fill_char=obj.getFill_char();
+		this.savefile_path=obj.getSavefile_path();
+		this.save_file_name=obj.getSave_file_name();
+		this.fill_char2=obj.getFill_char2();
+
+	}
+	
+	@Test
+	//2.读取文件内容，存储至map集合中
+	public Map<String,String> read()
+	{
+		Map<String,String> text_content= new HashMap();
+		text_content.clear();
+			try {
+				Workbook book = Workbook.getWorkbook(file_path);
+				Sheet sheet=book.getSheet(0);	
+				int k=0;
+				while(sheet.getCell(i,k)!=null)
+				{
+					text_content.put(sheet.getCell(i,k).getContents().trim(),sheet.getCell(j,k).getContents().trim());
+					k++;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				
+			} 
+			//System.out.println(text_content);
+			return text_content;
+
+		} 
+	//3.输出至txt文档中
+	public Boolean write(String name)
+	{
+		Map<String,String> text_content= this.read();
+		File txt_file=new File(this.savefile_path+"/"+this.save_file_name+".txt");
+		PrintStream out;
+		try {
+			txt_file.createNewFile();
+			out = new PrintStream(new FileOutputStream(txt_file));
+			System.setOut(out);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		} 
+		
+		if(this.fill_char2.equals(""))
+		{
+		for (String key : text_content.keySet()) {
+			   System.out.println( key + fill_char + text_content.get(key));
+			  }
+		}
+		else
+			for (String key : text_content.keySet()) {
+				   System.out.println( key + fill_char + text_content.get(key)+this.fill_char2);
+				  }
+		
+		
+		return true;
+
+
+	}
+}
+
+

@@ -1,0 +1,36 @@
+package com.dao;
+
+import java.sql.ResultSet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.stereotype.Repository;
+
+import com.domain.User;
+
+@Repository
+public class UserDao {
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
+	public int getMatchCount(String account,String password)
+	{
+		String hql="select count(*) from Admin where account=? and password=?";
+		return jdbcTemplate.queryForInt(hql,new Object[]{account,password});
+	}
+	public User findUserbyName(String account,String password)
+	{
+		String hql=" select account,password from Admin where account=? and password=?";
+		final User user;
+		jdbcTemplate.query(hql, new Object[]{account, password},new RowCallbackHandler(){
+			public void processRow(ResultSet rs)
+			{
+				user.setAccount(account);
+			}
+		};
+		});
+		return user;
+	}
+
+}
